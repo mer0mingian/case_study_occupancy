@@ -1,0 +1,57 @@
+{
+  "Comment": "SageMaker Training Job Workflow",
+  "StartAt": "StartTrainingJob",
+  "States": {
+    "StartTrainingJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:createTrainingJob.sync",
+      "Parameters": {
+        "AlgorithmSpecification": {
+          "TrainingImage": "your-sagemaker-training-image-uri",
+          "TrainingInputMode": "File"
+        },
+        "RoleArn": "your-sagemaker-role-arn",
+        "OutputDataConfig": {
+          "S3OutputPath": "s3://your-s3-bucket/your-sagemaker-output-path"
+        },
+        "ResourceConfig": {
+          "InstanceCount": 1,
+          "InstanceType": "ml.m4.xlarge",
+          "VolumeSizeInGB": 30
+        },
+        "TrainingJobName": "your-training-job-name",
+        "HyperParameters": {
+          "your_hyperparameter": "value"
+        },
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 3600
+        },
+        "InputDataConfig": [
+          {
+            "ChannelName": "train",
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": "s3://your-s3-bucket/your-training-data",
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            },
+            "ContentType": "text/csv",
+            "CompressionType": "None"
+          }
+        ]
+      },
+      "ResultPath": "$.TrainingJobResult",
+      "Next": "TrainingJobComplete"
+    },
+    "TrainingJobComplete": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:describeTrainingJob",
+      "Parameters": {
+        "TrainingJobName.$": "$.TrainingJobResult.TrainingJobName"
+      },
+      "ResultPath": "$.TrainingJobDetails",
+      "End": true
+    }
+  }
+}
