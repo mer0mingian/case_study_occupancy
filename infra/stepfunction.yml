@@ -1,3 +1,6 @@
+# https://github.com/aws/amazon-sagemaker-examples/tree/main/step-functions-data-science-sdk
+# https://github.com/aws/amazon-sagemaker-examples/blob/main/step-functions-data-science-sdk/automate_model_retraining_workflow/automate_model_retraining_workflow.ipynb
+
 {
   "Comment": "SageMaker Training Job Workflow",
   "StartAt": "StartTrainingJob",
